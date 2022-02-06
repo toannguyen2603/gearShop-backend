@@ -1,7 +1,8 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+const bcrypt = require("bcrypt");
 
-const userChame = new Schema(
+const userSchema = new Schema(
   {
     firstName: {
       type: String,
@@ -17,7 +18,7 @@ const userChame = new Schema(
       min: 3,
       max: 20,
     },
-    usermane: {
+    username: {
       type: String,
       required: true,
       trim: true,
@@ -32,13 +33,35 @@ const userChame = new Schema(
       trim: true,
       lowercase: true,
     },
+    hash_password: {
+      type: String,
+      required: true,
+    },
     role: {
       type: String,
       enum: ["admin", "user"],
-      default: "admin",
+      default: "user",
     },
     contactNumber: { type: String },
     pictureProfile: { type: String },
+    updateAt: {
+      type: Date,
+      default: new Date(),
+    },
   },
-  { timestamps: Date }
+  { timestamps: true }
 );
+
+// group of name
+userSchema.virtual("fullName").get(function () {
+  return `${this.firstName} ${this.lastName}`;
+});
+
+// hash password
+userSchema.methods = {
+  authenticate: async function (password) {
+    return await bcrypt.compare(password, this.hash_password);
+  },
+};
+
+module.exports = mongoose.model("User", userSchema);
