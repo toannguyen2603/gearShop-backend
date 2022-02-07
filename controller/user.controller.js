@@ -11,17 +11,23 @@ const generateJwtToken = (_id, role) => {
 module.exports = {
   register: async (req, res, next) => {
     try {
-      // Get User Info
+      // get user info
       const { firstName, lastName, username, email, password } = req.body;
 
+      // validate user input
+      if (!(email && password && firstName && lastName)) {
+        res.status(400).send("All input is required");
+      }
+
       // check wether email is duplicated
-      const query = await User.findOne({ email });
-      if (query)
+      const user = await User.findOne({ email });
+
+      if (user)
         return res.status(400).json({
           error: "User already registered",
         });
 
-      // hash password
+      // encrypt user password
       const hash_password = await bcrypt.hash(password, 10);
 
       // create new user
@@ -32,21 +38,6 @@ module.exports = {
         hash_password,
         username,
       });
-      // save new user
-      //   await newUser.save((error, user) => {
-      //     if (error) {
-      //       return res.status(400).json();
-      //     }
-
-      //     if (user) {
-      //       const token = generateJwtToken(user._id, user.role);
-      //       const { _id, firstName, lastName, email, role, fullName } = user;
-      //       return res.status(201).json({
-      //         token,
-      //         user: { _id, firstName, lastName, email, role, fullName },
-      //       });
-      //     }
-      //   });
 
       // save user
       await newUser.save();
@@ -75,22 +66,22 @@ module.exports = {
 
       // check email is existing
       const user = await User.findOne({ email });
+
       if (!user) {
         return res.status(401).send("Wrong Username or Password");
       }
       if (user) {
         //   compare password
-        const isPassword = await user.authenticate(req.body.password);
+        const isPassword = await user.authenticate(password);
         // check role
         if (isPassword && user.role === "user") {
           const accessToken = generateJwtToken(user._id, user.role);
-          const { _id, firstName, lastName, email, role, fullName } = user;
 
           //   if check success
           res.status(200).json({
             msg: "Login Success.",
             accessToken,
-            user: { _id, firstName, lastName, email, role, fullName },
+            id: user._id,
           });
         } else {
           return res.status(400).json({
@@ -107,7 +98,7 @@ module.exports = {
   //  get info on all of the user
   getAll: async (req, res) => {
     try {
-      let users = await Blogger.find();
+      let users = await User.find();
       res.status(200).json(users);
     } catch (err) {
       res.status(500).json(err);
@@ -116,7 +107,7 @@ module.exports = {
   //    get one info of the user
   getOne: async (req, res) => {
     try {
-      let user = await Blogger.findById(req.params.id);
+      let user = await User.findById(req.params.id);
       res.status(200).json(user);
     } catch (err) {
       res.status(500).json(err);
@@ -125,7 +116,7 @@ module.exports = {
   //   update one
   updateOne: async (req, res) => {
     try {
-      await Blogger.findByIdAndUpdate(req.params.id, { $set: req.body });
+      await User.findByIdAndUpdate(req.params.id, { $set: req.body });
       res.status(200).json("User updated successfully");
     } catch (err) {
       res.status(500).json(err);
@@ -134,7 +125,7 @@ module.exports = {
   //  delete one
   deleteOne: async (req, res) => {
     try {
-      let user = await Blogger.findById(req.params.id);
+      let user = await User.findById(req.params.id);
       await user.delete();
       res.status(200).json("User deleted successfully");
     } catch (err) {

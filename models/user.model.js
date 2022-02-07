@@ -22,9 +22,8 @@ const userSchema = new Schema(
       type: String,
       required: true,
       trim: true,
-      unique: true,
+      unique: false,
       lowercase: true,
-      index: true,
     },
     email: {
       type: String,
@@ -44,18 +43,9 @@ const userSchema = new Schema(
     },
     contactNumber: { type: String },
     pictureProfile: { type: String },
-    updateAt: {
-      type: Date,
-      default: new Date(),
-    },
   },
   { timestamps: true }
 );
-
-// group of name
-userSchema.virtual("fullName").get(function () {
-  return `${this.firstName} ${this.lastName}`;
-});
 
 // hash password
 userSchema.methods = {
