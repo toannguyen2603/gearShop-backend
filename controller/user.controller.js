@@ -35,7 +35,7 @@ module.exports = {
         firstName,
         lastName,
         email,
-        hash_password,
+        password: hash_password,
         username,
       });
 
@@ -77,11 +77,13 @@ module.exports = {
         if (isPassword && user.role === "user") {
           const accessToken = generateJwtToken(user._id, user.role);
 
+          //  get info user
+          const { _id, fullName } = user;
           //   if check success
           res.status(200).json({
             msg: "Login Success.",
             accessToken,
-            id: user._id,
+            user: { _id, fullName },
           });
         } else {
           return res.status(400).json({

@@ -32,7 +32,7 @@ const userSchema = new Schema(
       trim: true,
       lowercase: true,
     },
-    hash_password: {
+    password: {
       type: String,
       required: true,
     },
@@ -47,10 +47,14 @@ const userSchema = new Schema(
   { timestamps: true }
 );
 
-// hash password
+// group of name
+userSchema.virtual("fullName").get(function () {
+  return `${this.firstName} ${this.lastName}`;
+});
+// compare password
 userSchema.methods = {
   authenticate: async function (password) {
-    return await bcrypt.compare(password, this.hash_password);
+    return await bcrypt.compare(password, this.password);
   },
 };
 
