@@ -2,7 +2,8 @@ const Category = require("../models/category.model");
 const slugify = require("slugify");
 const shortid = require("shortid");
 
-// check categories parentID is duplicated
+//TODO: check categories parentID is duplicated
+
 function createCategories(categories, parentId = null) {
     const categoryList = [];
     let category;
@@ -11,6 +12,9 @@ function createCategories(categories, parentId = null) {
     } else {
         category = categories.filter((cat) => cat.parentId == parentId);
     }
+
+    // TODO: create list of category
+    // NOTE: create children category when adding "parentId"
 
     for (let cate of category) {
         categoryList.push({
@@ -22,27 +26,35 @@ function createCategories(categories, parentId = null) {
             children: createCategories(categories, cate._id),
         });
     }
+    //  return list
 
     return categoryList;
 }
 
+// TODO: add a category
+
 const addCategory = (req, res) => {
+    // attribute category
     const categoryObj = {
         name: req.body.name,
         slug: `${slugify(req.body.name)}-${shortid.generate()}`,
         createdBy: req.user._id,
     };
 
+    // adding "public" string in file image
     if (req.file) {
         categoryObj.categoryImage = "/public/" + req.file.filename;
     }
 
+    // adding parentId in children list
     if (req.body.parentId) {
         categoryObj.parentId = req.body.parentId;
     }
 
-    const cat = new Category(categoryObj);
-    cat.save((error, category) => {
+    // create new category
+    const cate = new Category(categoryObj);
+
+    cate.save((error, category) => {
         if (error) return res.status(400).json({ error });
         if (category) {
             return res.status(201).json({ category });
@@ -50,9 +62,13 @@ const addCategory = (req, res) => {
     });
 };
 
+// TODO: get all list of categories
+
 const getCategories = (req, res) => {
     Category.find({}).exec((error, categories) => {
         if (error) return res.status(400).json({ error });
+        // check condition
+
         if (categories) {
             const categoryList = createCategories(categories);
             res.status(200).json({ categoryList });
@@ -60,9 +76,13 @@ const getCategories = (req, res) => {
     });
 };
 
+// TODO: update a category with ID
 const updateCategories = async (req, res) => {
     const { _id, name, parentId, type } = req.body;
+    // Create new list update
+
     const updatedCategories = [];
+
     if (name instanceof Array) {
         for (let i = 0; i < name.length; i++) {
             const category = {
@@ -92,6 +112,7 @@ const updateCategories = async (req, res) => {
     }
 };
 
+// TODO: delete a category with ID
 const deleteCategories = async (req, res) => {
     const { ids } = req.body.payload;
     const deletedCategories = [];
