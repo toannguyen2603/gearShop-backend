@@ -4,6 +4,7 @@ const app = express();
 const userRouters = require("./routers/user");
 const adminRouters = require("./routers/admin");
 const categoryRouters = require("./routers/category");
+const productRouters = require("./routers/product");
 
 var bodyParser = require("body-parser");
 
@@ -26,6 +27,7 @@ connectDB();
 app.use("/api", userRouters);
 app.use("/api", adminRouters);
 app.use("/api", categoryRouters);
+app.use("/api", productRouters);
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);

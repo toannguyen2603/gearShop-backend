@@ -22,7 +22,7 @@ const categorySchema = new Schema(
         parentId: {
             type: String,
         },
-        createBy: {
+        createdBy: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
             require: true,
