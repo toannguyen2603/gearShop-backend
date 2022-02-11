@@ -25,9 +25,9 @@ const productModel = Schema(
         offer: {
             type: Number,
         },
-        productImage: [
+        productImages: [
             {
-                image: {
+                img: {
                     type: String,
                 },
             },

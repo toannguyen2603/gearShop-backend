@@ -7,45 +7,45 @@ const { LookoutEquipment } = require("aws-sdk");
 module.exports = {
     // TODO: CREATE PRODUCT
     createProduct: (req, res) => {
-        try {
-            // TODO: get product info
+        // return res.status(200).json({
+        //     file: req.files,
+        //     body: req.body,
+        //     length: req.files.length,
+        // });
+        // TODO: get product info
 
-            const { name, price, description, category, quantity, createdBy } = req.body;
+        const { name, price, description, category, quantity, createdBy } = req.body;
 
-            // TODO: create a ArrayList of picture product
+        // TODO: create a ArrayList of picture product
 
-            const listPictures = [];
+        const productImages = [];
 
-            // TODO: check file image is existing
-
-            if (req.file.length > 0) {
-                listPictures = req.files.map((file) => {
-                    return { image: file.location };
-                });
-            }
-
-            // TODO: create new a product
-
-            const newProduct = new Product({
-                name: name,
-                slug: slugify(name),
-                price,
-                quantity,
-                description,
-                listPictures,
-                category,
-                createdBy: req.user._id,
+        // TODO: check file image is existing
+        if (req.files.length > 0) {
+            productImages = req.files.map((file) => {
+                return { img: file.filename };
             });
-
-            // TODO: Save & return the newly created product info
-            newProduct.save();
-            return res.status(200).json({
-                newProduct,
-                files: req.files,
-            });
-        } catch (err) {
-            console.error(err);
         }
+
+        // TODO: create new a product
+        const product = new Product({
+            name: name,
+            slug: slugify(name),
+            price,
+            quantity,
+            description,
+            productImages,
+            category,
+            createdBy: req.user._id,
+        });
+
+        // TODO: Save & return the newly created product info
+        product.save();
+
+        return res.status(200).json({
+            product,
+            files: req.files,
+        });
     },
     // TODO: GET PRODUCT BY SLUG
     getProductBySlug: (req, res) => {
