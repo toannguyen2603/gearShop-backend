@@ -46,7 +46,11 @@ const productModel = Schema(
             ref: "Category",
             require: true,
         },
-        createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+        createdBy: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+            require: true,
+        },
     },
     { timestamps: true },
 );

@@ -2,6 +2,7 @@ const slugify = require("slugify");
 
 const Product = require("../models/product.model");
 const Category = require("../models/category.model");
+const { LookoutEquipment } = require("aws-sdk");
 
 module.exports = {
     // TODO: CREATE PRODUCT

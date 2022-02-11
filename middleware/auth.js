@@ -55,7 +55,6 @@ module.exports = {
                 msg: "Authorization required",
             });
         }
-
         //  Next when success
         next();
     },
@@ -67,9 +66,11 @@ module.exports = {
         }
         next();
     },
+
+    // admin login
     adminMiddleware: (req, res, next) => {
         if (req.user.role !== "admin") {
-            return res.status(200).json({ message: "Admin access denied" });
+            return res.status(400).json({ message: "Admin access denied" });
         }
         next();
     },
